@@ -8,7 +8,9 @@ public class Bar {
     }
 
         public static void main(String[] args) {
-        new Foo();
+        //new Foo();
+        System.out.println("Hello ");
+        System.out.print("World ");
     }
 }
 
