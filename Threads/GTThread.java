@@ -11,19 +11,21 @@ public class GTThread extends Thread {
     private boolean isExiting = false;
 
     //Put code in run() method that you want to execute when Thread runs
-    //wakes up every 1000ms to see if isExiting is true 
+    //wakes up every X MS to see if isExiting is true 
     //when thread wakes and isExiting is true, drops out of while loop sets isStarted to false then exits run
     public void run() {
         System.out.println("Thread " + threadNumber + " begins");
         while (!isExiting) {
 
-            System.out.println("Thread " + threadNumber + " is running");
+            System.out.println("Thread " + threadNumber + " naps");
 
             try {
-                Thread.sleep(GTConstant.THREAD_SLEEP_2);
+                Thread.sleep(GTConstant.GTTHREAD_SLEEP);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            System.out.println("Thread " + threadNumber + " wakes");
 
         }
 

@@ -2,6 +2,8 @@
 //creates Thread objects, starts and manages them
 
 import java.util.ArrayList;
+import java.time.Duration;
+import java.time.Instant;
 
 public class GTManager {
 
@@ -26,7 +28,7 @@ public class GTManager {
         
         // while threads napping, current thread sleeps
         try {
-            Thread.sleep(GTConstant.THREAD_SLEEP_1);
+            Thread.sleep(GTConstant.GTMANAGER_SLEEP);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -58,7 +60,7 @@ public class GTManager {
 
         // while threads are napping, current thread sleeps
         try {
-            Thread.sleep(GTConstant.THREAD_SLEEP_1);
+            Thread.sleep(GTConstant.GTMANAGER_SLEEP);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -69,7 +71,31 @@ public class GTManager {
         }
         
         // wait in loop until all threads have stopped
-        while (threadsAlive(threadArray)) {}
+        // potential for infinite loop here
+        // implement timeout logic using Instant and Duration classes
+        Instant startLoopTime = Instant.now();
+        Duration timeout = Duration.ofSeconds(20);
+
+        // variable to ensure printout displayed only once in case while code runs
+        boolean printedMessage = false;
+        
+        while (threadsAlive(threadArray)) {
+            // ensures message only printed once
+            if (!printedMessage) {
+                System.out.println("Some threads are still alive");
+                printedMessage = true;
+            }
+
+            Instant currentTime = Instant.now();
+            Duration loopDuration = Duration.between(startLoopTime, currentTime);
+    
+            if (loopDuration.compareTo(timeout) > 0) {
+                System.out.println("Timeout exceeded: some threads did not finish.");
+                // breaks out of while loop if timeout duration exceeded
+                break;
+            }
+
+        }
 
         return;
     }
