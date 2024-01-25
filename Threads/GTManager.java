@@ -7,17 +7,6 @@ import java.time.Instant;
 
 public class GTManager {
 
-    // private method because only needs to be accessed in this class
-    // loops through ArrayList of threads returns true if at least one is alive and false otherwise
-    private boolean threadsAlive(ArrayList<GTThread> threads) {
-        for (GTThread thread : threads) {
-            if (thread.isAlive()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     public void runOneThread() {
 
         // initialises new instance of GTThread
@@ -25,7 +14,7 @@ public class GTManager {
 
         // starts new concurrent thread
         gtthread.start();
-        
+
         // while threads napping, current thread sleeps
         try {
             Thread.sleep(GTConstant.GTMANAGER_SLEEP);
@@ -34,23 +23,21 @@ public class GTManager {
         }
 
         // sets isExiting to true causing the concurrent thread to exit the while loop
-        // don't put join method here else while loop won't exit
-        // what should argument of setter be?
         gtthread.setIsExiting(true);
-        
+
         return;
     }
 
-    
+    // runs many concurrent threads napping and waking
     public void runManyThreads() {
 
         // initialise arraylist of threads of predefined length
         // if length not predefined, add threads to list using while ([condition]) {add thread to list}
         ArrayList<GTThread> threadArray = new ArrayList<>(GTConstant.THREAD_ARRAY_LENGTH);
-        //adding items to threadArray
+
         for (int i = 0; i < GTConstant.THREAD_ARRAY_LENGTH; i++) {
-            GTThread gtthread = new GTThread(i);
-            threadArray.add(gtthread);
+            GTThread gtThread = new GTThread(i);
+            threadArray.add(gtThread);
         }
 
         // looping through thread array starting each thread.
@@ -60,7 +47,7 @@ public class GTManager {
 
         // while threads are napping, current thread sleeps
         try {
-            Thread.sleep(GTConstant.GTMANAGER_SLEEP);
+            GTThread.sleep(GTConstant.GTMANAGER_SLEEP);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -69,18 +56,16 @@ public class GTManager {
         for (GTThread thread : threadArray) {
             thread.setIsExiting(true);
         }
-        
-        // wait in loop until all threads have stopped
-        // potential for infinite loop here
-        // implement timeout logic using Instant and Duration classes
+
+        // begin while loop and timeout logic
         Instant startLoopTime = Instant.now();
         Duration timeout = Duration.ofSeconds(20);
 
-        // variable to ensure printout displayed only once in case while code runs
+        // if logic ensures message only printed once
         boolean printedMessage = false;
-        
-        while (threadsAlive(threadArray)) {
-            // ensures message only printed once
+
+        while (GTThread.threadsAlive(threadArray)) {
+
             if (!printedMessage) {
                 System.out.println("Some threads are still alive");
                 printedMessage = true;
@@ -88,10 +73,9 @@ public class GTManager {
 
             Instant currentTime = Instant.now();
             Duration loopDuration = Duration.between(startLoopTime, currentTime);
-    
+            // breaks out of while loop if timeout duration exceeded
             if (loopDuration.compareTo(timeout) > 0) {
                 System.out.println("Timeout exceeded: some threads did not finish.");
-                // breaks out of while loop if timeout duration exceeded
                 break;
             }
 
@@ -100,5 +84,51 @@ public class GTManager {
         return;
     }
 
-    //still to do: runThreadsData method.
+    public void runThreadsData() {
+
+        // creates new instance of GTSynchronisedData
+        GTSynchronisedData synchronisedData = new GTSynchronisedData();
+        ArrayList<GTThread> threadArray = new ArrayList<>(GTConstant.THREAD_ARRAY_LENGTH);
+
+        for (int i = 0; i < GTConstant.THREAD_ARRAY_LENGTH; i++) {
+
+            // constructor takes instance just created (synchronisedData) as a parameter 
+            // sets it to be the value of the instance variable synchronisedData in GTThread class
+            // which is the value of that variable now possessed by the newly created gtThread
+            GTThread gtThread = new GTThread(i, synchronisedData);
+            threadArray.add(gtThread);
+            gtThread.start();
+        }
+
+        try {
+            Thread.sleep(GTConstant.GTMANAGER_SLEEP);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (GTThread thread : threadArray) {
+            thread.setIsExiting(true);
+        }
+
+        Instant startLoopTime = Instant.now();
+        Duration timeout = Duration.ofSeconds(20);
+        boolean printedMessage = false;
+
+        while (GTThread.threadsAlive(threadArray)) {
+            if (!printedMessage) {
+                System.out.println("Some threads are still alive");
+                printedMessage = true;
+            }
+
+            Instant currentTime = Instant.now();
+            Duration loopDuration = Duration.between(startLoopTime, currentTime);
+
+            if (loopDuration.compareTo(timeout) > 0) {
+                System.out.println("Timeout exceeded: some threads did not finish.");
+                break;
+            }
+        }
+
+        System.out.println("Final value of myProtectedInt: " + synchronisedData.getMyprotectedInt());
+    }
 }
