@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class GTThread extends Thread {
 
-    private int threadNumber;
     private boolean isStarted = true;
     private boolean isExiting = false;
     private GTSynchronisedData synchronisedData;
@@ -33,17 +32,6 @@ public class GTThread extends Thread {
         return isStarted;
     }
 
-    // one parameter constructor to give threads unique identifier
-    public GTThread(int threadNumber) {
-        this.threadNumber = threadNumber;
-    }
-
-    // two parameter constructor
-    public GTThread(int threadNumber, GTSynchronisedData synchronisedData) {
-        this.threadNumber = threadNumber;
-        this.synchronisedData = synchronisedData;
-    }
-
     protected static boolean threadsAlive(ArrayList<GTThread> threads) {
         for (GTThread thread : threads) {
             if (thread.isAlive()) {
@@ -54,40 +42,41 @@ public class GTThread extends Thread {
     }
 
     public void run() {
-        System.out.println("Thread " + threadNumber + " begins");
+        System.out.println(Thread.currentThread().getName() + " begins");
         while (!isExiting) {
-            
 
             if (this.synchronisedData != null) {
-                System.out.println("Thread " + threadNumber + " increments value");
-                
-                // displays initial value of myprotectedInt
-                System.out.println("Initial value of myprotectedInt for Thread " + threadNumber + " is "
-                        + synchronisedData.getMyprotectedInt());
 
-                // increments value before nap
-                synchronisedData.incrementMyValue();
+                if (Math.random() * 10 < 5) {
 
-                // displays value after increment
-                System.out.println("New value of myprotectedInt for Thread " + threadNumber + " is "
-                        + synchronisedData.getMyprotectedInt());
+                    // increments value
+                    synchronisedData.incrementMyValue();
+
+                } else {
+
+                    // decrements value
+                    synchronisedData.decrementMyValue();
+
+                }
+
+            } else {
+
+                System.out.println(Thread.currentThread().getName() + " naps");
+
+                try {
+                    Thread.sleep(GTConstant.GTTHREAD_SLEEP);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                System.out.println(Thread.currentThread().getName() + " wakes");
             }
-
-            System.out.println("Thread " + threadNumber + " naps");
-
-            try {
-                Thread.sleep(GTConstant.GTTHREAD_SLEEP);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            System.out.println("Thread " + threadNumber + " wakes");
 
         }
 
         setIsStarted(false);
 
-        System.out.println("Thread " + threadNumber + " ends");
+        System.out.println(Thread.currentThread().getName() + " ends");
 
         return;
 

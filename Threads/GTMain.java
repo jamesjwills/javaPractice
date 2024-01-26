@@ -4,10 +4,10 @@ public class GTMain {
 
         System.out.println(Thread.currentThread().getName() + " thread begins");
 
-        GTManager gt = new GTManager();
-        // gt.runOneThread();
-        // gt.runManyThreads();
-        gt.runThreadsData();
+        GTManager gtManager = new GTManager();
+        gtManager.runOneThread();
+        gtManager.runManyThreads();
+        gtManager.runThreadsData();
 
         System.out.println(Thread.currentThread().getName() + " thread ends");
 

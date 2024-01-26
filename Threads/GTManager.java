@@ -10,7 +10,7 @@ public class GTManager {
     public void runOneThread() {
 
         // initialises new instance of GTThread
-        GTThread gtthread = new GTThread(1);
+        GTThread gtthread = new GTThread();
 
         // starts new concurrent thread
         gtthread.start();
@@ -36,7 +36,7 @@ public class GTManager {
         ArrayList<GTThread> threadArray = new ArrayList<>(GTConstant.THREAD_ARRAY_LENGTH);
 
         for (int i = 0; i < GTConstant.THREAD_ARRAY_LENGTH; i++) {
-            GTThread gtThread = new GTThread(i);
+            GTThread gtThread = new GTThread();
             threadArray.add(gtThread);
         }
 
@@ -95,7 +95,8 @@ public class GTManager {
             // constructor takes instance just created (synchronisedData) as a parameter 
             // sets it to be the value of the instance variable synchronisedData in GTThread class
             // which is the value of that variable now possessed by the newly created gtThread
-            GTThread gtThread = new GTThread(i, synchronisedData);
+            GTThread gtThread = new GTThread();
+            gtThread.setSynchronisedData(synchronisedData);
             threadArray.add(gtThread);
             gtThread.start();
         }
