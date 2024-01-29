@@ -1,38 +1,43 @@
 import java.util.concurrent.locks.Lock;
+// using locks instead of synchronsied methods for more fine-grained control
 import java.util.concurrent.locks.ReentrantLock;
 
-// using locks instead of synchronsied methods for more fine-grained control
 public class GTSynchronisedData {
 
-    private long myprotectedInt = 0;
+    // ===========================================================================================================
+    // INITIALIZATION
+    // initializes data field and lock
+    // ===========================================================================================================
 
-    // initialise new instance, lock, of Lock interface implemented as ReentrantLock
+    private long myprotectedInt = 0;
     private final Lock lock = new ReentrantLock();
 
-    // increment and decrement methods with locks to block other threads from
-    // accessing methods
+    // ===========================================================================================================
+    // METHOD incrementMyValue
+    // increments myprotectedInt by one
+    // ===========================================================================================================
+
     public void incrementMyValue() {
 
         lock.lock();
 
         try {
+            System.out.println(Thread.currentThread().getName() + " entering incrementMyValue()");
+            long oldValue = myprotectedInt;
 
-            try {
-                System.out.println(Thread.currentThread().getName() + " entering incrementMyValue()");
-                long oldValue = myprotectedInt;
+            // Simulating some work before incrementing
+            Thread.sleep(GTConstant.GTTHREAD_SLEEP);
 
-                // Simulating some work before incrementing
-                Thread.sleep(GTConstant.GTTHREAD_SLEEP);
+            myprotectedInt++;
 
-                myprotectedInt++;
+            System.out.println(Thread.currentThread().getName() + " incremented myprotectedInt from "
+                    + oldValue + " to " + myprotectedInt);
 
-                System.out.println(Thread.currentThread().getName() + " incremented myprotectedInt from "
-                        + oldValue + " to " + myprotectedInt);
+            // Simulating some work after incrementing
+            Thread.sleep(GTConstant.GTTHREAD_SLEEP);
 
-            } catch (InterruptedException e) {
-                System.out.println(Thread.currentThread().getName() + " was interrupted");
-            }
-
+        } catch (InterruptedException e) {
+            System.out.println(Thread.currentThread().getName() + " was interrupted");
         } finally {
 
             lock.unlock();
@@ -46,28 +51,32 @@ public class GTSynchronisedData {
         }
     }
 
-    // decrement method
+    // ===========================================================================================================
+    // METHOD decrementMyValue
+    // decrements myprotectedInt by one
+    // ===========================================================================================================
+
     public void decrementMyValue() {
 
         lock.lock();
 
         try {
+            System.out.println(Thread.currentThread().getName() + " entering decrementMyValue()");
+            long oldValue = myprotectedInt;
 
-            try {
-                System.out.println(Thread.currentThread().getName() + " entering decrementMyValue()");
-                long oldValue = myprotectedInt;
+            // Simulating some work before decrementing
+            Thread.sleep(GTConstant.GTTHREAD_SLEEP);
 
-                // Simulating some work before decrementing
-                Thread.sleep(GTConstant.GTTHREAD_SLEEP);
+            myprotectedInt--;
 
-                myprotectedInt--;
+            System.out.println(Thread.currentThread().getName() + " decremented myprotectedInt from " + oldValue
+                    + " to " + myprotectedInt);
 
-                System.out.println(Thread.currentThread().getName() + " decremented myprotectedInt from " + oldValue + " to " + myprotectedInt);
+            // Simulating some work before decrementing
+            Thread.sleep(GTConstant.GTTHREAD_SLEEP);
 
-            } catch (InterruptedException e) {
-                System.out.println(Thread.currentThread().getName() + " was interrupted");
-            }
-
+        } catch (InterruptedException e) {
+            System.out.println(Thread.currentThread().getName() + " was interrupted");
         } finally {
 
             lock.unlock();
@@ -81,7 +90,10 @@ public class GTSynchronisedData {
         }
     }
 
-    // getters and setters
+    // ===========================================================================================================
+    // GETTERS AND SETTERS
+    // ===========================================================================================================
+
     public long getMyprotectedInt() {
         lock.lock();
         try {
