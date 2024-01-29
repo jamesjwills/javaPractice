@@ -8,30 +8,7 @@ public class GTThread extends Thread {
     private boolean isExiting = false;
     private GTSynchronisedData synchronisedData;
 
-    public GTSynchronisedData getSynchronisedData() {
-        return synchronisedData;
-    }
-
-    public void setSynchronisedData(GTSynchronisedData synchronisedData) {
-        this.synchronisedData = synchronisedData;
-    }
-
-    public synchronized void setIsExiting(boolean isExiting) {
-        this.isExiting = isExiting;
-    }
-
-    public boolean getIsExiting() {
-        return isExiting;
-    }
-
-    public synchronized void setIsStarted(boolean isStarted) {
-        this.isStarted = isStarted;
-    }
-
-    public boolean getIsStarted() {
-        return isStarted;
-    }
-
+    // method to determine if threads are alive
     protected static boolean threadsAlive(ArrayList<GTThread> threads) {
         for (GTThread thread : threads) {
             if (thread.isAlive()) {
@@ -66,10 +43,15 @@ public class GTThread extends Thread {
                 try {
                     Thread.sleep(GTConstant.GTTHREAD_SLEEP);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    System.out.println(Thread.currentThread().getName() + " was interrupted");
                 }
 
                 System.out.println(Thread.currentThread().getName() + " wakes");
+            }
+
+            if (Thread.interrupted()) {
+                setIsExiting(true);  // Set flag to ensure the thread terminates
+                break;
             }
 
         }
@@ -82,4 +64,28 @@ public class GTThread extends Thread {
 
     }
 
+    // getters and setters
+    public GTSynchronisedData getSynchronisedData() {
+        return synchronisedData;
+    }
+
+    public void setSynchronisedData(GTSynchronisedData synchronisedData) {
+        this.synchronisedData = synchronisedData;
+    }
+
+    public synchronized void setIsExiting(boolean isExiting) {
+        this.isExiting = isExiting;
+    }
+
+    public boolean getIsExiting() {
+        return isExiting;
+    }
+
+    public synchronized void setIsStarted(boolean isStarted) {
+        this.isStarted = isStarted;
+    }
+
+    public boolean getIsStarted() {
+        return isStarted;
+    }
 }
